@@ -17,7 +17,7 @@ app.get('/data', (req, res) => {
   dataController.getAllData(req, res);
 });
 
-// Bind to address 0.0.0.0 and port 3000
-app.listen(port, '0.0.0.0', () => {
-  console.log(`Server is running on 0.0.0.0:${port}`);
+// Bind to all available network interfaces on port 3000
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
