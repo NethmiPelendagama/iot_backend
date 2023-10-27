@@ -1,33 +1,33 @@
-const mongoose = require('mongoose');
+const DataModel = require('../models/DataModel');
 
-// Define a schema for your data
-const dataSchema = new mongoose.Schema({
-  temperature: Number,
-  humidity: Number,
-  soil_moisture: Number,
+class DataController {
+  constructor() {
+    this.dataModel = new DataModel();
+  }
 
-});
+  async postData(req, res) {
+    const { temperature, humidity, soil_moisture } = req.body;
 
-// Create a model based on the schema
-const Data = mongoose.model('Data', dataSchema);
-
-class DataModel {
-  async addData(temperature, humidity, soil_moisture) {
-    // Create a new data document using the Data model
-    const newData = new Data({ temperature, humidity, soil_moisture });
-
-    try {
-      // Save the new data to the database
-      await newData.save();
-    } catch (error) {
-      throw new Error('Error saving data to the database');
+    if (temperature !== undefined && humidity !== undefined && soil_moisture !== undefined) {
+      try {
+        await this.dataModel.addData(temperature, humidity, soil_moisture);
+        res.status(201).json({ message: 'Data added successfully' });
+      } catch (error) {
+        res.status(500).json({ error: 'Error saving data to the database' });
+      }
+    } else {
+      res.status(400).json({ error: 'Invalid data' });
     }
   }
 
-  async getAllData() {
-    // Retrieve all data from the database
-    return await Data.find({});
+  async getAllData(req, res) {
+    try {
+      const allData = await this.dataModel.getAllData();
+      res.json(allData);
+    } catch (error) {
+      res.status(500).json({ error: 'Error retrieving data from the database' });
+    }
   }
 }
 
-module.exports = DataModel;
+module.exports = DataController;
